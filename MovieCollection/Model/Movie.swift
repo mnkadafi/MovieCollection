@@ -16,6 +16,6 @@ struct Root : Decodable{
 struct Movie: Decodable{
     var title : String?
     var overview : String?
-    var genre_ids : [Int]
+    var popularity : Double?
     var poster_path : String?
 }

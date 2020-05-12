@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var collectionViewTriple: UICollectionView!
     
     var Moviess = [Movie]()
+    var Moviess2 = [Movie]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,7 +34,8 @@ class ViewController: UIViewController {
         collectionViewTriple.dataSource = self
         collectionViewTriple.delegate = self
         
-        callApi()
+        callApi(page: "1")
+        callApi(page: "2")
     }
 }
 
@@ -43,7 +45,7 @@ extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource{
         if collectionView == self.collectionViewSingle {
             return Moviess.count
         }else{
-            return Moviess.count
+            return Moviess2.count
         }
     }
     
@@ -60,18 +62,15 @@ extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource{
                 }
             }
             
-            cellSingle.labelSingleOne.text = Moviess[indexPath.row].title
+            cellSingle.labelSingleOne.text = String(describing: Moviess[indexPath.row].popularity!)
             cellSingle.labelSingleTwo.text = Moviess[indexPath.row].title
             cellSingle.labelSIngleThree.text = Moviess[indexPath.row].overview
-            
-            cellSingle.imageSingle.layer.cornerRadius = 25
-            cellSingle.imageSingle.clipsToBounds = true
             
             return cellSingle
         }else{
             let cellTriple = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell2", for: indexPath) as! Cell
 
-            let imageURL = "https://image.tmdb.org/t/p/original/"+Moviess[indexPath.row].poster_path!
+            let imageURL = "https://image.tmdb.org/t/p/original/"+Moviess2[indexPath.row].poster_path!
             
             AF.download(imageURL).responseData { response in
                 if let data = response.value {
@@ -80,12 +79,10 @@ extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource{
                 }
             }
             
-            cellTriple.labelTripleOne.text = Moviess[indexPath.row].title
-            cellTriple.labelTripleTwo.text = Moviess[indexPath.row].title
-            cellTriple.labelTripleThree.text = Moviess[indexPath.row].overview
-            
-            cellTriple.imageTriple.layer.cornerRadius = 20
-            cellTriple.imageTriple.clipsToBounds = true
+            cellTriple.labelTripleOne.text = String(describing: Moviess2[indexPath.row].popularity!)
+            cellTriple.labelTripleTwo.text = Moviess2[indexPath.row].title
+            cellTriple.labelTripleThree.text = Moviess2[indexPath.row].overview
+
             cellTriple.btnRounded.layer.cornerRadius = 13
             cellTriple.btnRounded.clipsToBounds = true
             
@@ -95,16 +92,21 @@ extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource{
 }
 
 extension ViewController{
-    func callApi(){
-        let requestAPI = Service(baseURL: "https://api.themoviedb.org/3/movie/upcoming?api_key=4c4df43862b1d6323c2cfe8706f39861&language=en-US&page=1")
+    func callApi(page : String){
+        let requestAPI = Service(baseURL: "https://api.themoviedb.org/3/movie/upcoming?api_key=4c4df43862b1d6323c2cfe8706f39861&language=en-US&page=\(page)")
         requestAPI.getAllData {[weak self] result in
             switch result{
                 case .failure(let error):
                     print(error)
                 case .success(let movie):
-                    self?.Moviess = movie
-                    self?.collectionViewSingle.reloadData()
-                    self?.collectionViewTriple.reloadData()
+                    
+                    if page == "2"{
+                        self?.Moviess = movie
+                        self?.collectionViewSingle.reloadData()
+                    }else{
+                        self?.Moviess2 = movie
+                        self?.collectionViewTriple.reloadData()
+                    }
             }
         }
     }
