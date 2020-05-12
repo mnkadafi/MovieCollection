@@ -7,11 +7,14 @@
 //
 
 import UIKit
+import Alamofire
 
 class ViewController: UIViewController {
 
     @IBOutlet weak var collectionViewSingle: UICollectionView!
     @IBOutlet weak var collectionViewTriple: UICollectionView!
+    
+    var Moviess = [Movie]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,6 +32,8 @@ class ViewController: UIViewController {
         collectionViewSingle.delegate = self
         collectionViewTriple.dataSource = self
         collectionViewTriple.delegate = self
+        
+        callApi()
     }
 }
 
@@ -36,19 +41,28 @@ extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource{
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == self.collectionViewSingle {
-            return Movies.count
+            return Moviess.count
         }else{
-            return Movies.count
+            return Moviess.count
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == self.collectionViewSingle {
             let cellSingle = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! Cell
-            cellSingle.imageSingle.image = Movies[indexPath.row].image
-            cellSingle.labelSingleOne.text = Movies[indexPath.row].category
-            cellSingle.labelSingleTwo.text = Movies[indexPath.row].title
-            cellSingle.labelSIngleThree.text = Movies[indexPath.row].subtitle
+
+            let imageURL = "https://image.tmdb.org/t/p/original/"+Moviess[indexPath.row].poster_path!
+            
+            AF.download(imageURL).responseData { response in
+                if let data = response.value {
+                    let image = UIImage(data: data)
+                    cellSingle.imageSingle.image = image
+                }
+            }
+            
+            cellSingle.labelSingleOne.text = Moviess[indexPath.row].title
+            cellSingle.labelSingleTwo.text = Moviess[indexPath.row].title
+            cellSingle.labelSIngleThree.text = Moviess[indexPath.row].overview
             
             cellSingle.imageSingle.layer.cornerRadius = 25
             cellSingle.imageSingle.clipsToBounds = true
@@ -56,10 +70,19 @@ extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource{
             return cellSingle
         }else{
             let cellTriple = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell2", for: indexPath) as! Cell
-            cellTriple.imageTriple.image = Movies[indexPath.row].image
-            cellTriple.labelTripleOne.text = Movies[indexPath.row].category
-            cellTriple.labelTripleTwo.text = Movies[indexPath.row].title
-            cellTriple.labelTripleThree.text = Movies[indexPath.row].subtitle
+
+            let imageURL = "https://image.tmdb.org/t/p/original/"+Moviess[indexPath.row].poster_path!
+            
+            AF.download(imageURL).responseData { response in
+                if let data = response.value {
+                    let image = UIImage(data: data)
+                    cellTriple.imageTriple.image = image
+                }
+            }
+            
+            cellTriple.labelTripleOne.text = Moviess[indexPath.row].title
+            cellTriple.labelTripleTwo.text = Moviess[indexPath.row].title
+            cellTriple.labelTripleThree.text = Moviess[indexPath.row].overview
             
             cellTriple.imageTriple.layer.cornerRadius = 20
             cellTriple.imageTriple.clipsToBounds = true
@@ -71,3 +94,18 @@ extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource{
     }
 }
 
+extension ViewController{
+    func callApi(){
+        let requestAPI = Service(baseURL: "https://api.themoviedb.org/3/movie/upcoming?api_key=4c4df43862b1d6323c2cfe8706f39861&language=en-US&page=1")
+        requestAPI.getAllData {[weak self] result in
+            switch result{
+                case .failure(let error):
+                    print(error)
+                case .success(let movie):
+                    self?.Moviess = movie
+                    self?.collectionViewSingle.reloadData()
+                    self?.collectionViewTriple.reloadData()
+            }
+        }
+    }
+}

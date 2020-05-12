@@ -35,19 +35,19 @@ class AppsViewController: UIViewController {
             
             func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
                 if collectionView == self.collectionViewSingleOne {
-                    return Movies.count
+                    return 0
                 }else{
-                    return Movies.count
+                    return 0
                 }
             }
             
             func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
                 if collectionView == self.collectionViewSingleOne {
                     let cellSingle = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! Cell
-                    cellSingle.imageSingle.image = Movies[indexPath.row].image
-                    cellSingle.labelSingleOne.text = Movies[indexPath.row].category
-                    cellSingle.labelSingleTwo.text = Movies[indexPath.row].title
-                    cellSingle.labelSIngleThree.text = Movies[indexPath.row].subtitle
+//                    cellSingle.imageSingle.image = Movies[indexPath.row].image
+//                    cellSingle.labelSingleOne.text = Movies[indexPath.row].category
+//                    cellSingle.labelSingleTwo.text = Movies[indexPath.row].title
+//                    cellSingle.labelSIngleThree.text = Movies[indexPath.row].subtitle
                     
                     cellSingle.imageSingle.layer.cornerRadius = 25
                     cellSingle.imageSingle.clipsToBounds = true
@@ -55,10 +55,10 @@ class AppsViewController: UIViewController {
                     return cellSingle
                 }else{
                     let cellTriple = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell2", for: indexPath) as! Cell
-                    cellTriple.imageTriple.image = Movies[indexPath.row].image
-                    cellTriple.labelTripleOne.text = Movies[indexPath.row].category
-                    cellTriple.labelTripleTwo.text = Movies[indexPath.row].title
-                    cellTriple.labelTripleThree.text = Movies[indexPath.row].subtitle
+//                    cellTriple.imageTriple.image = Movies[indexPath.row].image
+//                    cellTriple.labelTripleOne.text = Movies[indexPath.row].category
+//                    cellTriple.labelTripleTwo.text = Movies[indexPath.row].title
+//                    cellTriple.labelTripleThree.text = Movies[indexPath.row].subtitle
                     
                     cellTriple.imageTriple.layer.cornerRadius = 20
                     cellTriple.imageTriple.clipsToBounds = true
