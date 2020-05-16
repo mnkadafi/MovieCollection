@@ -53,7 +53,14 @@ extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource{
         if collectionView == self.collectionViewSingle {
             let cellSingle = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! Cell
 
-            let imageURL = "https://image.tmdb.org/t/p/original/"+Moviess[indexPath.row].poster_path!
+            let endpoint = Moviess[indexPath.row].poster_path
+            
+            guard endpoint != nil else {
+                cellSingle.imageSingle.image = UIImage(named: "joker.jpg")
+                return cellSingle
+            }
+            
+            let imageURL = "https://image.tmdb.org/t/p/original/"+endpoint!
             
             AF.download(imageURL).responseData { response in
                 if let data = response.value {
@@ -70,7 +77,14 @@ extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource{
         }else{
             let cellTriple = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell2", for: indexPath) as! Cell
 
-            let imageURL = "https://image.tmdb.org/t/p/original/"+Moviess2[indexPath.row].poster_path!
+            let endpoint = Moviess2[indexPath.row].poster_path
+            
+            guard endpoint != nil else {
+                cellTriple.imageSingle.image = UIImage(named: "joker.jpg")
+                return cellTriple
+            }
+            
+            let imageURL = "https://image.tmdb.org/t/p/original/"+endpoint!
             
             AF.download(imageURL).responseData { response in
                 if let data = response.value {
