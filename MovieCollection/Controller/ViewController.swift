@@ -34,7 +34,7 @@ class ViewController: UIViewController {
         collectionViewTriple.dataSource = self
         collectionViewTriple.delegate = self
         
-        callApi(page: "1")
+        callApi(page: "3")
         callApi(page: "2")
     }
 }
@@ -96,7 +96,14 @@ extension ViewController{
     
     func configureCell(urlposter: Movie, cell : Cell, section: String){
         guard urlposter.poster_path != nil else {
-            cell.imageSingle.image = UIImage(named: "joker.jpg")
+            switch section {
+                case "Top":
+                    cell.imageSingle.image = UIImage(named: "joker.jpg")
+                case "Bottom":
+                    cell.imageTriple.image = UIImage(named: "joker.jpg")
+                default:
+                    print("Error")
+            }
             return
         }
         
@@ -108,7 +115,7 @@ extension ViewController{
                     cell.imageTriple.image = UIImage.init(data: data)
                 default:
                     print("Error")
-                }
+            }
         }
     }
 }
