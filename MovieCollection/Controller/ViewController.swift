@@ -53,21 +53,9 @@ extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource{
         if collectionView == self.collectionViewSingle {
             let cellSingle = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! Cell
 
-            let endpoint = Moviess[indexPath.row].poster_path
+            let endpoint = Moviess[indexPath.row]
             
-            guard endpoint != nil else {
-                cellSingle.imageSingle.image = UIImage(named: "joker.jpg")
-                return cellSingle
-            }
-            
-            let imageURL = "https://image.tmdb.org/t/p/original/"+endpoint!
-            
-            AF.download(imageURL).responseData { response in
-                if let data = response.value {
-                    let image = UIImage(data: data)
-                    cellSingle.imageSingle.image = image
-                }
-            }
+            configureCell(urlposter: endpoint, cell: cellSingle, section: "Top")
             
             cellSingle.labelSingleOne.text = String(describing: Moviess[indexPath.row].popularity!)
             cellSingle.labelSingleTwo.text = Moviess[indexPath.row].title
@@ -77,21 +65,9 @@ extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource{
         }else{
             let cellTriple = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell2", for: indexPath) as! Cell
 
-            let endpoint = Moviess2[indexPath.row].poster_path
+            let endpoint = Moviess2[indexPath.row]
             
-            guard endpoint != nil else {
-                cellTriple.imageSingle.image = UIImage(named: "joker.jpg")
-                return cellTriple
-            }
-            
-            let imageURL = "https://image.tmdb.org/t/p/original/"+endpoint!
-            
-            AF.download(imageURL).responseData { response in
-                if let data = response.value {
-                    let image = UIImage(data: data)
-                    cellTriple.imageTriple.image = image
-                }
-            }
+            configureCell(urlposter: endpoint, cell: cellTriple, section: "Bottom")
             
             cellTriple.labelTripleOne.text = String(describing: Moviess2[indexPath.row].popularity!)
             cellTriple.labelTripleTwo.text = Moviess2[indexPath.row].title
@@ -123,5 +99,27 @@ extension ViewController{
                     }
             }
         }
+    }
+    
+    func configureCell(urlposter: Movie, cell : Cell, section: String){
+        
+            guard urlposter.poster_path != nil else {
+                cell.imageSingle.image = UIImage(named: "joker.jpg")
+                return
+            }
+                
+            let imageURL = "https://image.tmdb.org/t/p/original/\(urlposter.poster_path!)"
+            AF.download(imageURL).responseData { response in
+                if let data = response.value {
+                    switch section {
+                    case "Top":
+                        cell.imageSingle.image = UIImage.init(data: data)
+                    case "Bottom":
+                        cell.imageTriple.image = UIImage.init(data: data)
+                    default:
+                        print("Error")
+                    }
+                }
+            }
     }
 }

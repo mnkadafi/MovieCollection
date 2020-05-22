@@ -24,16 +24,13 @@ class Service{
     func getAllData(completion: @escaping(Result<[Movie], MovieError>) -> Void){
         AF.request(baseURL, method: .get, parameters: nil, encoding: URLEncoding.default, headers: nil, interceptor: nil).response { (responseData) in
             guard let data = responseData.data else {
-                print("Result Error");
                 completion(.failure(.canNotProcessData))
                 return}
             do{
                 let getmov = try JSONDecoder().decode(Root.self, from: data)
                 let movie = getmov.results
-                print("Decode Success");
                 completion(.success(movie))
             }catch{
-                print("Result Error");
                 completion(.failure(.canNotProcessData))
             }
         }

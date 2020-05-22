@@ -19,3 +19,10 @@ struct Movie: Decodable{
     var popularity : Double?
     var poster_path : String?
 }
+
+struct Moviea: Codable{
+    var title : String?
+    var overview : String?
+    var popularity : Double?
+    var poster_path : String?
+}
