@@ -83,43 +83,32 @@ extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource{
 
 extension ViewController{
     func callApi(page : String){
-        let requestAPI = Service(baseURL: "https://api.themoviedb.org/3/movie/upcoming?api_key=4c4df43862b1d6323c2cfe8706f39861&language=en-US&page=\(page)")
-        requestAPI.getAllData {[weak self] result in
-            switch result{
-                case .failure(let error):
-                    print(error)
-                case .success(let movie):
-                    
-                    if page == "2"{
-                        self?.Moviess = movie
-                        self?.collectionViewSingle.reloadData()
-                    }else{
-                        self?.Moviess2 = movie
-                        self?.collectionViewTriple.reloadData()
-                    }
+        ServiceAPI.getAllData(page: page) { (movie, error) in
+            if page == "2"{
+                self.Moviess = movie!
+                self.collectionViewSingle.reloadData()
+            }else{
+                self.Moviess2 = movie!
+                self.collectionViewTriple.reloadData()
             }
         }
     }
     
     func configureCell(urlposter: Movie, cell : Cell, section: String){
+        guard urlposter.poster_path != nil else {
+            cell.imageSingle.image = UIImage(named: "joker.jpg")
+            return
+        }
         
-            guard urlposter.poster_path != nil else {
-                cell.imageSingle.image = UIImage(named: "joker.jpg")
-                return
-            }
-                
-            let imageURL = "https://image.tmdb.org/t/p/original/\(urlposter.poster_path!)"
-            AF.download(imageURL).responseData { response in
-                if let data = response.value {
-                    switch section {
-                    case "Top":
-                        cell.imageSingle.image = UIImage.init(data: data)
-                    case "Bottom":
-                        cell.imageTriple.image = UIImage.init(data: data)
-                    default:
-                        print("Error")
-                    }
+        ServiceAPI.getPosterMovie(imageURL: urlposter.poster_path!) { (data) in
+            switch section {
+                case "Top":
+                    cell.imageSingle.image = UIImage.init(data: data)
+                case "Bottom":
+                    cell.imageTriple.image = UIImage.init(data: data)
+                default:
+                    print("Error")
                 }
-            }
+        }
     }
 }

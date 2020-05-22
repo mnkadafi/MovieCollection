@@ -14,24 +14,33 @@ enum MovieError: Error{
     case canNotProcessData
 }
 
-class Service{
-    fileprivate var baseURL = ""
+class ServiceAPI{
+    static let mainURL = "https://api.themoviedb.org/3/movie/upcoming?api_key=4c4df43862b1d6323c2cfe8706f39861&language=en-US&page="
+    static let mainImageURL = "https://image.tmdb.org/t/p/original/"
     
-    init(baseURL: String){
-        self.baseURL = baseURL
-    }
-    
-    func getAllData(completion: @escaping(Result<[Movie], MovieError>) -> Void){
-        AF.request(baseURL, method: .get, parameters: nil, encoding: URLEncoding.default, headers: nil, interceptor: nil).response { (responseData) in
+    static func getAllData(page: String, completion: @escaping([Movie]?, MovieError) -> Void){
+        AF.request(mainURL+page, method: .get, encoding: URLEncoding.default, headers: nil, interceptor: nil).response { (responseData) in
             guard let data = responseData.data else {
-                completion(.failure(.canNotProcessData))
+                completion(nil, .canNotProcessData)
                 return}
             do{
                 let getmov = try JSONDecoder().decode(Root.self, from: data)
                 let movie = getmov.results
-                completion(.success(movie))
+                completion(movie, .noDataAvailable)
             }catch{
-                completion(.failure(.canNotProcessData))
+                completion(nil, .canNotProcessData)
+            }
+        }
+    }
+    
+    static func getPosterMovie(imageURL : String, completion: @escaping(Data) -> Void){
+        AF.download(mainImageURL+imageURL).responseData { response in
+            if let data = response.value {
+                do{
+                    completion(data)
+                }catch{
+                    completion(data)
+                }
             }
         }
     }
